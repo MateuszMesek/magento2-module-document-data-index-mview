@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="MateuszMesek\DocumentDataIndexerMviewApi\Command\GetDocumentNameByViewIdInterface" type="MateuszMesek\DocumentDataIndexerMview\Command\GetDocumentNameByViewId"/>
+    <preference for="MateuszMesek\DocumentDataIndexerMviewApi\Command\GetTriggersByDocumentNameInterface" type="MateuszMesek\DocumentDataIndexerMview\Command\GetTriggersByDocumentName"/>
+    <preference for="MateuszMesek\DocumentDataIndexerMviewApi\Command\GetNodeSubscriptionsByDocumentNameInterface" type="MateuszMesek\DocumentDataIndexerMview\Command\GetNodeSubscriptionsByDocumentName"/>
+
+    <type name="MateuszMesek\DocumentDataIndexerMview\Config">
+        <arguments>
+            <argument name="data" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\Data</argument>
+        </arguments>
+    </type>
+    <virtualType name="MateuszMesek\DocumentDataIndexerMview\Config\Data" type="Magento\Framework\Config\Data">
+        <arguments>
+            <argument name="reader" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\Reader</argument>
+            <argument name="cacheId" xsi:type="string">document_data_mview_config_cache</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="MateuszMesek\DocumentDataIndexerMview\Config\Reader" type="Magento\Framework\Config\Reader\Filesystem">
+        <arguments>
+            <argument name="converter" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\Converter</argument>
+            <argument name="schemaLocator" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\SchemaLocator</argument>
+            <argument name="fileName" xsi:type="string">document_data_mview.xml</argument>
+            <argument name="idAttributes" xsi:type="array">
+                <item name="/config/document" xsi:type="string">name</item>
+                <item name="/config/document/node" xsi:type="string">path</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="MateuszMesek\DocumentDataIndexerMview\Config\Converter">
+        <arguments>
+            <argument name="documentProcessor" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\Converter\Document</argument>
+        </arguments>
+    </type>
+    <type name="MateuszMesek\DocumentDataIndexerMview\Config\Converter\Document">
+        <arguments>
+            <argument name="nodeProcessor" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\Converter\Node</argument>
+        </arguments>
+    </type>
+    <type name="MateuszMesek\DocumentDataIndexerMview\Config\Converter\Node">
+        <arguments>
+            <argument name="nodeSubscriptionProcessor" xsi:type="object">MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription</argument>
+        </arguments>
+    </type>
+    <type name="MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription\Pool">
+        <arguments>
+            <argument name="types" xsi:type="array">
+                <item name="table" xsi:type="string">MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription\Table</item>
+                <item name="attribute" xsi:type="string">MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription\Attribute</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="MateuszMesek\DocumentDataIndexerMview\Config\SchemaLocator" type="Magento\Framework\Config\GenericSchemaLocator">
+        <arguments>
+            <argument name="moduleName" xsi:type="string">MateuszMesek_DocumentDataIndexerMview</argument>
+            <argument name="schema" xsi:type="string">document_data_mview.xsd</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Framework\Mview\Config\Reader">
+        <plugin name="MateuszMesek_DocumentDataIndexerMview" type="MateuszMesek\DocumentDataIndexerMview\Plugin\InjectViews\OnViewConfigReader"/>
+    </type>
+    <type name="Magento\Framework\Mview\View\SubscriptionInterface">
+        <plugin name="MateuszMesek_DocumentDataIndexerMview" type="MateuszMesek\DocumentDataIndexerMview\Plugin\UpdateDbTriggers\OnSubscription"/>
+    </type>
+
+    <type name="MateuszMesek\DocumentDataApi\Command\GetDocumentDataInterface">
+        <plugin name="MateuszMesek_DocumentDataIndexerMview" type="MateuszMesek\DocumentDataIndexerMview\Plugin\LimitNodePaths\OnGetDocumentData"/>
+    </type>
+    <type name="MateuszMesek\DocumentDataApi\Command\GetDocumentNodesInterface">
+        <plugin name="MateuszMesek_DocumentDataIndexerMview" type="MateuszMesek\DocumentDataIndexerMview\Plugin\LimitNodePaths\GetDocumentNodes"/>
+    </type>
+</config>

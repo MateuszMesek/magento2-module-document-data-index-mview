@@ -1,0 +1,13 @@
+{
+    "document_data_mview_pattern": {
+        "column": {
+            "id":  true,
+            "document_id": true,
+            "node_path": true,
+            "dimensions": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

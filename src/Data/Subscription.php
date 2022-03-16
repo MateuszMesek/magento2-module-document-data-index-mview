@@ -11,16 +11,18 @@ class Subscription implements SubscriptionInterface
     private string $triggerEvent;
     private string $triggerTime;
     private ?string $condition;
-    private string $documentId;
+    private ?string $documentId;
     private ?string $dimensions;
+    private ?string $rows;
 
     public function __construct(
         string $tableName,
         string $triggerEvent,
-        string $documentId,
         string $triggerTime = Trigger::TIME_AFTER,
         ?string $condition = null,
-        ?string $dimensions = null
+        ?string $documentId = null,
+        ?string $dimensions = null,
+        ?string $rows = null
     )
     {
         $this->tableName = $tableName;
@@ -29,6 +31,7 @@ class Subscription implements SubscriptionInterface
         $this->condition = $condition;
         $this->documentId = $documentId;
         $this->dimensions = $dimensions;
+        $this->rows = $rows;
     }
 
     public function getTableName(): string
@@ -51,7 +54,7 @@ class Subscription implements SubscriptionInterface
         return $this->condition;
     }
 
-    public function getDocumentId(): string
+    public function getDocumentId(): ?string
     {
         return $this->documentId;
     }
@@ -59,5 +62,10 @@ class Subscription implements SubscriptionInterface
     public function getDimensions(): ?string
     {
         return $this->dimensions;
+    }
+
+    public function getRows(): ?string
+    {
+        return $this->rows;
     }
 }

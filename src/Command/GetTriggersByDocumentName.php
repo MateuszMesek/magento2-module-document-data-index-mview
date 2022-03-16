@@ -65,13 +65,19 @@ class GetTriggersByDocumentName implements GetTriggersByDocumentNameInterface
 
                     $statement = sprintf(
                         <<<SQL
-                            SET @documentId = {$subscriptionItem->getDocumentId()};
-                            SET @nodePath = %1s;
-                            SET @dimensions = {$subscriptionItem->getDimensions()};
-                            INSERT INTO %2s (`document_id`, `node_path`, `dimensions`) SELECT @documentId, @nodePath, @dimensions WHERE @documentId IS NOT NULL;
+                            SET @documentId = %1\$s;
+                            SET @nodePath = %2\$s;
+                            SET @dimensions = %3\$s;
+                            INSERT INTO %4\$s (`document_id`, `node_path`, `dimensions`)
+                            SELECT IFNULL(t.document_id, @documentId), IFNULL(t.node_path, @nodePath), IFNULL(t.dimensions, @dimensions)
+                            FROM (%5\$s) AS t
+                            WHERE IFNULL(t.document_id, @documentId) IS NOT NULL;
                         SQL,
-                        $connection->quote($path),
-                        $connection->quoteIdentifier($changelogTable)
+                        $subscriptionItem->getDocumentId() ?? 'NULL',
+                        $path === '*' ? 'NULL' : $connection->quote($path),
+                        $subscriptionItem->getDimensions() ?? 'NULL',
+                        $connection->quoteIdentifier($changelogTable),
+                        $subscriptionItem->getRows() ?? 'SELECT NULL AS `document_id`, NULL AS `node_path`, NULL AS `dimensions`'
                     );
 
                     if ($condition = $subscriptionItem->getCondition()) {

@@ -9,6 +9,10 @@ class State
 
     public function lock(string $documentName, array $documentIds, array $nodePaths): void
     {
+        if (empty($nodePaths)) {
+            return;
+        }
+
         $this->locks[] = ['name' => $documentName, 'ids' => $documentIds, 'paths' => $nodePaths];
     }
 

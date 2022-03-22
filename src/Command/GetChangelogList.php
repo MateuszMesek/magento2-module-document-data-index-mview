@@ -51,6 +51,10 @@ class GetChangelogList implements GetChangelogListInterface
 
         foreach ($groupByDimensions as $dimensions => $documentIds) {
             foreach ($documentIds as $documentId => $paths) {
+                if (isset($paths[null])) {
+                    $paths = [];
+                }
+
                 yield $this->changelogFactory->create([
                     'dimensions' => json_decode($dimensions, true),
                     'ids' => [$documentId],

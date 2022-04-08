@@ -5,7 +5,7 @@ namespace MateuszMesek\DocumentDataIndexMview;
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionFactory;
 use Magento\Framework\Mview\ActionInterface;
-use MateuszMesek\DocumentDataIndexer\DimensionProvider\WithDocumentNameProvider;
+use MateuszMesek\DocumentDataIndex\DimensionProvider\WithDocumentNameProvider;
 use MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths\State;
 use MateuszMesek\DocumentDataIndexMviewApi\Command\GetChangelogListInterface;
 

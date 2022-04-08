@@ -17,8 +17,5 @@
         "psr-4": {
             "MateuszMesek\\DocumentDataIndexMview\\": "src"
         }
-    },
-    "replace": {
-        "mateuszmesek-magento2/module-document-data-index-mview": "*"
     }
 }

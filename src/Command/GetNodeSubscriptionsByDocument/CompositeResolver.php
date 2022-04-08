@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Command\GetNodeSubscriptionsByDocument;
+namespace MateuszMesek\DocumentDataIndexMview\Command\GetNodeSubscriptionsByDocument;
 
 use Generator;
 use Magento\Framework\ObjectManager\TMap;
 use Magento\Framework\ObjectManager\TMapFactory;
-use MateuszMesek\DocumentDataIndexerMviewApi\NodeSubscriptionsResolverInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\NodeSubscriptionsResolverInterface;
 
 class CompositeResolver implements NodeSubscriptionsResolverInterface
 {

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Command\GetNodeSubscriptionsByDocument;
+namespace MateuszMesek\DocumentDataIndexMview\Command\GetNodeSubscriptionsByDocument;
 
 use Generator;
-use MateuszMesek\DocumentDataIndexerMview\Config;
-use MateuszMesek\DocumentDataIndexerMviewApi\NodeSubscriptionsResolverInterface;
+use MateuszMesek\DocumentDataIndexMview\Config;
+use MateuszMesek\DocumentDataIndexMviewApi\NodeSubscriptionsResolverInterface;
 
 class ConfigResolver implements NodeSubscriptionsResolverInterface
 {

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Plugin\InjectViews;
+namespace MateuszMesek\DocumentDataIndexMview\Plugin\InjectViews;
 
 use Magento\Framework\Mview\Config\Reader;
-use MateuszMesek\DocumentDataIndexerMview\Config;
+use MateuszMesek\DocumentDataIndexMview\Config;
 
 class OnViewConfigReader
 {

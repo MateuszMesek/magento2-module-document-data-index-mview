@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Config\Converter;
+namespace MateuszMesek\DocumentDataIndexMview\Config\Converter;
 
 use DOMNode;
-use MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription\Pool;
+use MateuszMesek\DocumentDataIndexMview\Config\Converter\NodeSubscription\Pool;
 use MateuszMesek\Framework\Config\Converter\ProcessorInterface;
 
 class NodeSubscription implements ProcessorInterface

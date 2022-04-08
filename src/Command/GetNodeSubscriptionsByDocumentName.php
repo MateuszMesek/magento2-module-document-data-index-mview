@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Command;
+namespace MateuszMesek\DocumentDataIndexMview\Command;
 
-use MateuszMesek\DocumentDataIndexerMview\Command\GetNodeSubscriptionsByDocument\ResolverPool;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetNodeSubscriptionsByDocumentNameInterface;
+use MateuszMesek\DocumentDataIndexMview\Command\GetNodeSubscriptionsByDocument\ResolverPool;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetNodeSubscriptionsByDocumentNameInterface;
 use Traversable;
 
 class GetNodeSubscriptionsByDocumentName implements GetNodeSubscriptionsByDocumentNameInterface

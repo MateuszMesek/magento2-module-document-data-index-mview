@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription;
+namespace MateuszMesek\DocumentDataIndexMview\Config\Converter\NodeSubscription;
 
 use DOMNode;
-use MateuszMesek\DocumentDataIndexerMview\NodeSubscription\Table\SubscriptionGenerator;
+use MateuszMesek\DocumentDataIndexMview\NodeSubscription\Table\SubscriptionGenerator;
 use MateuszMesek\Framework\Config\Converter\AttributeValueResolver;
 use MateuszMesek\Framework\Config\Converter\ProcessorInterface;
 

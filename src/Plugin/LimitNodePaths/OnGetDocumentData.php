@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Plugin\LimitNodePaths;
+namespace MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths;
 
 use MateuszMesek\DocumentDataApi\Command\GetDocumentDataInterface;
 use MateuszMesek\DocumentDataApi\InputInterface;

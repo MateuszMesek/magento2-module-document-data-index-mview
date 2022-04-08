@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Data;
+namespace MateuszMesek\DocumentDataIndexMview\Data;
 
 use Magento\Framework\DB\Ddl\Trigger;
-use MateuszMesek\DocumentDataIndexerMviewApi\Data\SubscriptionInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Data\SubscriptionInterface;
 
 class Subscription implements SubscriptionInterface
 {

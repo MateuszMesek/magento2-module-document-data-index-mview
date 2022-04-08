@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Data;
+namespace MateuszMesek\DocumentDataIndexMview\Data;
 
 use ArrayIterator;
-use MateuszMesek\DocumentDataIndexerMviewApi\Data\ChangelogInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Data\ChangelogInterface;
 use Traversable;
 
 class Changelog implements ChangelogInterface

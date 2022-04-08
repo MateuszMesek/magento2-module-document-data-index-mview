@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Config;
+namespace MateuszMesek\DocumentDataIndexMview\Config;
 
 use Magento\Framework\Config\ConverterInterface;
 use MateuszMesek\Framework\Config\Converter\ItemsResolver;

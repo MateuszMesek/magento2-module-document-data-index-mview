@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\NodeSubscription\Table;
+namespace MateuszMesek\DocumentDataIndexMview\NodeSubscription\Table;
 
 use InvalidArgumentException;
 use Magento\Framework\DB\Ddl\Trigger;
-use MateuszMesek\DocumentDataIndexerMview\Data\SubscriptionFactory;
+use MateuszMesek\DocumentDataIndexMview\Data\SubscriptionFactory;
 use Traversable;
 
 class SubscriptionGenerator

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview;
+namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionFactory;
 use Magento\Framework\Mview\ActionInterface;
 use MateuszMesek\DocumentDataIndexer\DimensionProvider\WithDocumentNameProvider;
-use MateuszMesek\DocumentDataIndexerMview\Plugin\LimitNodePaths\State;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetChangelogListInterface;
+use MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths\State;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetChangelogListInterface;
 
 class Action implements ActionInterface
 {

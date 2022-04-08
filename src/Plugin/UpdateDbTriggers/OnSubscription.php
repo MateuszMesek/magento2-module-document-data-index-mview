@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Plugin\UpdateDbTriggers;
+namespace MateuszMesek\DocumentDataIndexMview\Plugin\UpdateDbTriggers;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Mview\View\SubscriptionInterface;
 use Magento\Framework\Mview\ViewInterface;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetDocumentNameByViewIdInterface;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetTriggersByDocumentNameInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetDocumentNameByViewIdInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetTriggersByDocumentNameInterface;
 
 class OnSubscription
 {

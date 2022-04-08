@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Command;
+namespace MateuszMesek\DocumentDataIndexMview\Command;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Trigger;
 use Magento\Framework\DB\Ddl\TriggerFactory;
 use Magento\Framework\ObjectManagerInterface;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetNodeSubscriptionsByDocumentNameInterface;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetTriggersByDocumentNameInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetNodeSubscriptionsByDocumentNameInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetTriggersByDocumentNameInterface;
 use Traversable;
 
 class GetTriggersByDocumentName implements GetTriggersByDocumentNameInterface
@@ -45,7 +45,7 @@ class GetTriggersByDocumentName implements GetTriggersByDocumentNameInterface
 
                 $generator = $this->objectManager->get($type);
 
-                /** @var \MateuszMesek\DocumentDataIndexerMviewApi\Data\SubscriptionInterface[] $subscriptionItems */
+                /** @var \MateuszMesek\DocumentDataIndexMviewApi\Data\SubscriptionInterface[] $subscriptionItems */
                 $subscriptionItems = call_user_func_array([$generator, 'generate'], $arguments);
 
                 foreach ($subscriptionItems as $subscriptionItem) {

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Config\Converter;
+namespace MateuszMesek\DocumentDataIndexMview\Config\Converter;
 
 use DOMNode;
 use MateuszMesek\Framework\Config\Converter\AttributeValueResolver;

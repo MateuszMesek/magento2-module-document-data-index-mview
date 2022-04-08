@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Command;
+namespace MateuszMesek\DocumentDataIndexMview\Command;
 
 use Magento\Framework\Mview\ConfigInterface;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetDocumentNameByViewIdInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetDocumentNameByViewIdInterface;
 
 class GetDocumentNameByViewId implements GetDocumentNameByViewIdInterface
 {

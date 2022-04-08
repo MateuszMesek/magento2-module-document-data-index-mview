@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Config\Converter\NodeSubscription;
+namespace MateuszMesek\DocumentDataIndexMview\Config\Converter\NodeSubscription;
 
 use InvalidArgumentException;
 use Magento\Framework\ObjectManager\TMap;

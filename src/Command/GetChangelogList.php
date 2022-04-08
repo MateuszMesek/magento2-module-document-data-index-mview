@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\Command;
+namespace MateuszMesek\DocumentDataIndexMview\Command;
 
 use Magento\Framework\App\ResourceConnection;
-use MateuszMesek\DocumentDataIndexerMview\Data\ChangelogFactory;
-use MateuszMesek\DocumentDataIndexerMviewApi\Command\GetChangelogListInterface;
+use MateuszMesek\DocumentDataIndexMview\Data\ChangelogFactory;
+use MateuszMesek\DocumentDataIndexMviewApi\Command\GetChangelogListInterface;
 use Traversable;
 
 class GetChangelogList implements GetChangelogListInterface

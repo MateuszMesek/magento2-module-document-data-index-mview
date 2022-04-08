@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview;
+namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\Config\DataInterface;
 

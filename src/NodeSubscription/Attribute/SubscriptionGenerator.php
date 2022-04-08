@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexerMview\NodeSubscription\Attribute;
+namespace MateuszMesek\DocumentDataIndexMview\NodeSubscription\Attribute;
 
 use InvalidArgumentException;
 use Magento\Eav\Model\Config;
 use Magento\Framework\DB\Ddl\Trigger;
-use MateuszMesek\DocumentDataIndexerMview\Data\SubscriptionFactory;
+use MateuszMesek\DocumentDataIndexMview\Data\SubscriptionFactory;
 use Traversable;
 
 class SubscriptionGenerator

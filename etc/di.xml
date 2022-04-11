@@ -71,7 +71,7 @@
     </type>
     <type name="MateuszMesek\DocumentDataIndexMview\Action">
         <arguments>
-            <argument name="dimensionalIndexer" xsi:type="object">MateuszMesek\DocumentDataIndexer\DimensionalIndexer</argument>
+            <argument name="dimensionalIndexer" xsi:type="object">MateuszMesek\DocumentDataIndexIndexer\DimensionalIndexer</argument>
         </arguments>
     </type>
 </config>

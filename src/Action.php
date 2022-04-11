@@ -6,6 +6,7 @@ use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Indexer\DimensionFactory;
 use Magento\Framework\Mview\ActionInterface;
 use MateuszMesek\DocumentDataIndex\DimensionProvider\WithDocumentNameProvider;
+use MateuszMesek\DocumentDataIndex\DimensionProvider\WithNodePathsProvider;
 use MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths\State;
 use MateuszMesek\DocumentDataIndexMviewApi\Command\GetChangelogListInterface;
 
@@ -41,7 +42,7 @@ class Action implements ActionInterface
                 WithDocumentNameProvider::DIMENSION_NAME => $this->dimensionFactory->create(
                     WithDocumentNameProvider::DIMENSION_NAME,
                     $this->documentName
-                )
+                ),
             ];
 
             foreach ($item->getDimensions() as $name => $value) {

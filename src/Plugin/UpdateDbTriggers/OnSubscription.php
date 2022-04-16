@@ -55,10 +55,6 @@ class OnSubscription
             $this->triggerProvider->get($context)
         );
 
-        if (empty($triggers)) {
-            return;
-        }
-
         $changelogTableName = $this->changelogTableNameResolver->resolve($context);
 
         $connection = $this->resource->getConnection();
@@ -101,10 +97,6 @@ class OnSubscription
         $triggers = iterator_to_array(
             $this->triggerProvider->get($context)
         );
-
-        if (empty($triggers)) {
-            return;
-        }
 
         $connection = $this->resource->getConnection();
 

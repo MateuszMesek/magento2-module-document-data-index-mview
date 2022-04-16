@@ -4,10 +4,11 @@ namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
 use Magento\Framework\Mview\ActionInterface;
-use MateuszMesek\DocumentDataIndexIndexer\DimensionProvider\Factory as DimensionFactory;
+use MateuszMesek\DocumentDataIndexIndexer\Dimension\Factory as DimensionFactory;
 use MateuszMesek\DocumentDataIndexIndexer\DimensionProvider\WithDocumentNameProvider;
 use MateuszMesek\DocumentDataIndexIndexer\DimensionProvider\WithNodePathsProvider;
 use MateuszMesek\DocumentDataIndexMviewApi\ChangelogListProviderInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Data\ChangelogInterface;
 
 class Action implements ActionInterface
 {
@@ -36,25 +37,32 @@ class Action implements ActionInterface
         $items = $this->changelogListProvider->get($context);
 
         foreach ($items as $item) {
-            $dimensions = [
-                WithDocumentNameProvider::DIMENSION_NAME => $this->dimensionFactory->create(
-                    WithDocumentNameProvider::DIMENSION_NAME,
-                    $this->documentName
-                ),
-                WithNodePathsProvider::DIMENSION_NAME => $this->dimensionFactory->create(
-                    WithNodePathsProvider::DIMENSION_NAME,
-                    $item->getPaths()
-                )
-            ];
-
-            foreach ($item->getDimensions() as $name => $value) {
-                $dimensions[$name] = $this->dimensionFactory->create($name, $value);
-            }
+            $dimensions = $this->buildDimensions($item);
 
             $this->dimensionalIndexer->executeByDimensions(
                 $dimensions,
                 $item->getIds()
             );
         }
+    }
+
+    private function buildDimensions(ChangelogInterface $changelog): array
+    {
+        $dimensions = [];
+
+        foreach ($changelog->getDimensions() as $name => $value) {
+            $dimensions[$name] = $this->dimensionFactory->create($name, $value);
+        }
+
+        $dimensions[WithDocumentNameProvider::DIMENSION_NAME] = $this->dimensionFactory->create(
+            WithDocumentNameProvider::DIMENSION_NAME,
+            $this->documentName
+        );
+        $dimensions[WithNodePathsProvider::DIMENSION_NAME] = $this->dimensionFactory->create(
+            WithNodePathsProvider::DIMENSION_NAME,
+            $changelog->getPaths()
+        );
+
+        return $dimensions;
     }
 }

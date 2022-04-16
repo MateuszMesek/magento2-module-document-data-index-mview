@@ -79,6 +79,12 @@
             <argument name="dimensionalIndexer" xsi:type="object">MateuszMesek\DocumentDataIndexIndexer\DimensionalIndexer</argument>
         </arguments>
     </type>
+    <preference for="MateuszMesek\DocumentDataIndexMviewApi\ChangelogListProviderInterface" type="MateuszMesek\DocumentDataIndexMview\ChangelogListProvider"/>
+    <type name="MateuszMesek\DocumentDataIndexMview\ChangelogListProvider">
+        <arguments>
+            <argument name="changelogTableNameResolver" xsi:type="object">MateuszMesek\DocumentDataIndexMview\ChangelogTableNameResolver</argument>
+        </arguments>
+    </type>
     <!-- mview subscription -->
     <type name="Magento\Framework\Mview\View\SubscriptionInterface">
         <plugin name="MateuszMesek_DocumentDataIndexMview" type="MateuszMesek\DocumentDataIndexMview\Plugin\UpdateDbTriggers\OnSubscription"/>

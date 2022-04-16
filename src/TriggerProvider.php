@@ -1,47 +1,55 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexMview\Command;
+namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Trigger;
 use Magento\Framework\DB\Ddl\TriggerFactory;
 use Magento\Framework\ObjectManagerInterface;
-use MateuszMesek\DocumentDataIndexMviewApi\Command\GetNodeSubscriptionsByDocumentNameInterface;
-use MateuszMesek\DocumentDataIndexMviewApi\Command\GetTriggersByDocumentNameInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\ChangelogTableNameResolverInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\SubscriptionProviderInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\TriggerNameResolverInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\TriggerProviderInterface;
 use Traversable;
 
-class GetTriggersByDocumentName implements GetTriggersByDocumentNameInterface
+class TriggerProvider implements TriggerProviderInterface
 {
-    private GetNodeSubscriptionsByDocumentNameInterface $getNodeSubscriptionsByDocumentName;
+    private SubscriptionProviderInterface $subscriptionProvider;
+    private ChangelogTableNameResolverInterface $changelogTableNameResolver;
+    private TriggerNameResolverInterface $triggerNameResolver;
     private TriggerFactory $triggerFactory;
     private ObjectManagerInterface $objectManager;
     private ResourceConnection $resourceConnection;
 
     public function __construct(
-        GetNodeSubscriptionsByDocumentNameInterface $getNodeSubscriptionsByDocumentName,
-        TriggerFactory $triggerFactory,
-        ObjectManagerInterface $objectManager,
-        ResourceConnection $resourceConnection
+        SubscriptionProviderInterface       $subscriptionProvider,
+        ChangelogTableNameResolverInterface $changelogTableNameResolver,
+        TriggerNameResolverInterface        $triggerNameResolver,
+        TriggerFactory                      $triggerFactory,
+        ObjectManagerInterface              $objectManager,
+        ResourceConnection                  $resourceConnection
     )
     {
-        $this->getNodeSubscriptionsByDocumentName = $getNodeSubscriptionsByDocumentName;
+        $this->subscriptionProvider = $subscriptionProvider;
+        $this->changelogTableNameResolver = $changelogTableNameResolver;
+        $this->triggerNameResolver = $triggerNameResolver;
         $this->triggerFactory = $triggerFactory;
         $this->objectManager = $objectManager;
         $this->resourceConnection = $resourceConnection;
     }
 
-    public function execute(string $documentName): Traversable
+    public function get(array $context): Traversable
     {
-        $subscriptions = $this->getNodeSubscriptionsByDocumentName->execute($documentName);
-        $changelogTable = $this->resourceConnection->getTableName("document_data_{$documentName}_mview");
+        $subscriptionsByPath = $this->subscriptionProvider->get($context);
+        $changelogTableName = $this->changelogTableNameResolver->resolve($context);
 
         $connection = $this->resourceConnection->getConnection();
 
         $triggers = [];
 
-        foreach ($subscriptions as $path => $pathSubscriptions) {
-            foreach ($pathSubscriptions as $pathSubscription) {
-                ['type' => $type, 'arguments' => $arguments] = $pathSubscription;
+        foreach ($subscriptionsByPath as $path => $subscriptions) {
+            foreach ($subscriptions as $subscription) {
+                ['type' => $type, 'arguments' => $arguments] = $subscription;
 
                 $generator = $this->objectManager->get($type);
 
@@ -49,11 +57,7 @@ class GetTriggersByDocumentName implements GetTriggersByDocumentNameInterface
                 $subscriptionItems = call_user_func_array([$generator, 'generate'], $arguments);
 
                 foreach ($subscriptionItems as $subscriptionItem) {
-                    $triggerName = $this->resourceConnection->getTriggerName(
-                        "document_data_{$subscriptionItem->getTableName()}",
-                        $subscriptionItem->getTriggerTime(),
-                        $subscriptionItem->getTriggerEvent()
-                    );
+                    $triggerName = $this->triggerNameResolver->resolver($context, $subscriptionItem);
 
                     if (!isset($triggers[$triggerName])) {
                         $triggers[$triggerName] = ($this->triggerFactory->create())
@@ -69,14 +73,14 @@ class GetTriggersByDocumentName implements GetTriggersByDocumentNameInterface
                             SET @nodePath = %2\$s;
                             SET @dimensions = %3\$s;
                             INSERT INTO %4\$s (`document_id`, `node_path`, `dimensions`)
-                            SELECT IFNULL(t.document_id, @documentId), IFNULL(t.node_path, @nodePath), IFNULL(t.dimensions, @dimensions)
+                            SELECT IFNULL(t.document_id, @documentId), IFNULL(t.node_path, @nodePath), CONVERT(IFNULL(t.dimensions, @dimensions) USING UTF8MB4)
                             FROM (%5\$s) AS t
                             WHERE IFNULL(t.document_id, @documentId) IS NOT NULL;
                         SQL,
                         $subscriptionItem->getDocumentId() ?? 'NULL',
                         $path === '*' ? 'NULL' : $connection->quote($path),
                         $subscriptionItem->getDimensions() ?? 'NULL',
-                        $connection->quoteIdentifier($changelogTable),
+                        $connection->quoteIdentifier($changelogTableName),
                         $subscriptionItem->getRows() ?? 'SELECT NULL AS `document_id`, NULL AS `node_path`, NULL AS `dimensions`'
                     );
 

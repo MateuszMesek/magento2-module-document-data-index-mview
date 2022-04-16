@@ -1,34 +1,45 @@
 <?php declare(strict_types=1);
 
-namespace MateuszMesek\DocumentDataIndexMview\Command;
+namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Serialize\Serializer\Json;
 use MateuszMesek\DocumentDataIndexMview\Data\ChangelogFactory;
-use MateuszMesek\DocumentDataIndexMviewApi\Command\GetChangelogListInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\ChangelogListProviderInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\ChangelogTableNameResolverInterface;
 use Traversable;
 
-class GetChangelogList implements GetChangelogListInterface
+class ChangelogListProvider implements ChangelogListProviderInterface
 {
+    private ContextReader $contextReader;
+    private ChangelogTableNameResolverInterface $changelogTableNameResolver;
     private ResourceConnection $resourceConnection;
-    private string $documentName;
     private ChangelogFactory $changelogFactory;
+    private Json $json;
 
     public function __construct(
+        ContextReader $contextReader,
+        ChangelogTableNameResolverInterface $changelogTableNameResolver,
         ResourceConnection $resourceConnection,
-        string $documentName,
-        ChangelogFactory $changelogFactory
+        ChangelogFactory $changelogFactory,
+        Json $json
     )
     {
+        $this->contextReader = $contextReader;
+        $this->changelogTableNameResolver = $changelogTableNameResolver;
         $this->resourceConnection = $resourceConnection;
-        $this->documentName = $documentName;
         $this->changelogFactory = $changelogFactory;
+        $this->json = $json;
     }
 
-    public function execute(array $ids): Traversable
+    public function get(array $context): Traversable
     {
+        $ids = $this->contextReader->getChangelogIds($context);
+        $changelogTableName = $this->changelogTableNameResolver->resolve($context);
+
         $connection = $this->resourceConnection->getConnection();
         $select = ($connection->select())
-            ->from($this->resourceConnection->getTableName("document_data_{$this->documentName}_mview"))
+            ->from($this->resourceConnection->getTableName($changelogTableName))
             ->where('id IN (?)', $ids);
 
         $rows = $connection->fetchAll($select);
@@ -56,7 +67,7 @@ class GetChangelogList implements GetChangelogListInterface
                 }
 
                 yield $this->changelogFactory->create([
-                    'dimensions' => json_decode($dimensions, true),
+                    'dimensions' => $this->json->unserialize($dimensions),
                     'ids' => [$documentId],
                     'paths' => array_keys($paths)
                 ]);

@@ -3,8 +3,9 @@
 namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\Config\DataInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\Config\SubscriptionProviderInterface;
 
-class Config
+class Config implements SubscriptionProviderInterface
 {
     private DataInterface $data;
 
@@ -31,6 +32,11 @@ class Config
         }
 
         return $action;
+    }
+
+    public function getSubscriptionProvider(string $documentName): ?string
+    {
+        return $this->data->get("$documentName/subscriptionProvider");
     }
 
     public function getSubscriptions(string $documentName): array

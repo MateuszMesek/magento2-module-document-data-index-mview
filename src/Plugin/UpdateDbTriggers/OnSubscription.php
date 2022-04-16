@@ -5,23 +5,27 @@ namespace MateuszMesek\DocumentDataIndexMview\Plugin\UpdateDbTriggers;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Mview\View\SubscriptionInterface;
 use Magento\Framework\Mview\ViewInterface;
-use MateuszMesek\DocumentDataIndexMviewApi\Command\GetDocumentNameByViewIdInterface;
-use MateuszMesek\DocumentDataIndexMviewApi\Command\GetTriggersByDocumentNameInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\ChangelogTableNameResolverInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\DocumentNameResolverInterface;
+use MateuszMesek\DocumentDataIndexMviewApi\TriggerProviderInterface;
 
 class OnSubscription
 {
-    private GetDocumentNameByViewIdInterface $getDocumentNameByViewId;
-    private GetTriggersByDocumentNameInterface $getTriggersByDocumentName;
+    private DocumentNameResolverInterface $documentNameResolver;
+    private TriggerProviderInterface $triggerProvider;
+    private ChangelogTableNameResolverInterface $changelogTableNameResolver;
     private ResourceConnection $resource;
 
     public function __construct(
-        GetDocumentNameByViewIdInterface $getDocumentNameByViewId,
-        GetTriggersByDocumentNameInterface $getTriggersByDocumentName,
-        ResourceConnection $resource
+        DocumentNameResolverInterface       $documentNameResolver,
+        TriggerProviderInterface            $triggerProvider,
+        ChangelogTableNameResolverInterface $changelogTableNameResolver,
+        ResourceConnection                  $resource
     )
     {
-        $this->getDocumentNameByViewId = $getDocumentNameByViewId;
-        $this->getTriggersByDocumentName = $getTriggersByDocumentName;
+        $this->documentNameResolver = $documentNameResolver;
+        $this->triggerProvider = $triggerProvider;
+        $this->changelogTableNameResolver = $changelogTableNameResolver;
         $this->resource = $resource;
     }
 
@@ -35,24 +39,34 @@ class OnSubscription
             return;
         }
 
-        $documentName = $this->getDocumentNameByViewId->execute($view->getId());
+        $context = [
+            'view_id' => $view->getId()
+        ];
+
+        $documentName = $this->documentNameResolver->resolver($context);
 
         if (null === $documentName) {
             return;
         }
 
-        $triggers = $this->getTriggersByDocumentName->execute($documentName);
+        $context['document_name'] = $documentName;
+
+        $triggers = iterator_to_array(
+            $this->triggerProvider->get($context)
+        );
 
         if (empty($triggers)) {
             return;
         }
+
+        $changelogTableName = $this->changelogTableNameResolver->resolve($context);
 
         $connection = $this->resource->getConnection();
         $connection->query(sprintf(
             <<<SQL
                 CREATE TABLE IF NOT EXISTS %s LIKE %s
             SQL,
-            $this->resource->getTableName("document_data_{$documentName}_mview"),
+            $this->resource->getTableName($changelogTableName),
             $this->resource->getTableName('document_data_mview_pattern')
         ));
 
@@ -72,13 +86,21 @@ class OnSubscription
             return;
         }
 
-        $documentName = $this->getDocumentNameByViewId->execute($view->getId());
+        $context = [
+            'view_id' => $view->getId()
+        ];
+
+        $documentName = $this->documentNameResolver->resolver($context);
 
         if (null === $documentName) {
             return;
         }
 
-        $triggers = $this->getTriggersByDocumentName->execute($documentName);
+        $context['document_name'] = $documentName;
+
+        $triggers = iterator_to_array(
+            $this->triggerProvider->get($context)
+        );
 
         if (empty($triggers)) {
             return;
@@ -90,8 +112,10 @@ class OnSubscription
             $connection->dropTrigger($trigger->getName());
         }
 
+        $changelogTableName = $this->changelogTableNameResolver->resolve($context);
+
         $connection->dropTable(
-            $this->resource->getTableName("document_data_{$documentName}_mview")
+            $this->resource->getTableName($changelogTableName)
         );
     }
 }

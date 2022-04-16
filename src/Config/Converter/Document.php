@@ -11,6 +11,7 @@ class Document implements ProcessorInterface
 {
     private const NODES = [
         'action',
+        'subscriptionProvider',
         'node'
     ];
 
@@ -44,7 +45,8 @@ class Document implements ProcessorInterface
 
             switch ($child->nodeName) {
                 case 'action':
-                    $data['action'] = $this->attributeValueResolver->resolve($child, 'name');
+                case 'subscriptionProvider':
+                    $data[$child->nodeName] = $this->attributeValueResolver->resolve($child, 'name');
                     break;
 
                 case 'node':

@@ -3,39 +3,37 @@
 namespace MateuszMesek\DocumentDataIndexMview;
 
 use Magento\Framework\Indexer\DimensionalIndexerInterface;
-use Magento\Framework\Indexer\DimensionFactory;
 use Magento\Framework\Mview\ActionInterface;
-use MateuszMesek\DocumentDataIndex\DimensionProvider\WithDocumentNameProvider;
-use MateuszMesek\DocumentDataIndex\DimensionProvider\WithNodePathsProvider;
-use MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths\State;
-use MateuszMesek\DocumentDataIndexMviewApi\Command\GetChangelogListInterface;
+use MateuszMesek\DocumentDataIndexIndexer\DimensionProvider\Factory as DimensionFactory;
+use MateuszMesek\DocumentDataIndexIndexer\DimensionProvider\WithDocumentNameProvider;
+use MateuszMesek\DocumentDataIndexIndexer\DimensionProvider\WithNodePathsProvider;
+use MateuszMesek\DocumentDataIndexMviewApi\ChangelogListProviderInterface;
 
 class Action implements ActionInterface
 {
-    private GetChangelogListInterface $getChangelogList;
-    private DimensionalIndexerInterface $dimensionalIndexer;
+    private ChangelogListProviderInterface $changelogListProvider;
     private DimensionFactory $dimensionFactory;
+    private DimensionalIndexerInterface $dimensionalIndexer;
     private string $documentName;
-    private State $state;
 
     public function __construct(
-        GetChangelogListInterface $getChangelogList,
-        DimensionalIndexerInterface $dimensionalIndexer,
+        ChangelogListProviderInterface $changelogListProvider,
         DimensionFactory $dimensionFactory,
-        string $documentName,
-        State $state
+        DimensionalIndexerInterface $dimensionalIndexer,
+        string $documentName
     )
     {
-        $this->getChangelogList = $getChangelogList;
-        $this->dimensionalIndexer = $dimensionalIndexer;
+        $this->changelogListProvider = $changelogListProvider;
         $this->dimensionFactory = $dimensionFactory;
+        $this->dimensionalIndexer = $dimensionalIndexer;
         $this->documentName = $documentName;
-        $this->state = $state;
     }
 
     public function execute($ids): void
     {
-        $items = $this->getChangelogList->execute($ids);
+        $context = ['document_name' => $this->documentName, 'changelog_ids' => $ids];
+
+        $items = $this->changelogListProvider->get($context);
 
         foreach ($items as $item) {
             $dimensions = [
@@ -43,22 +41,20 @@ class Action implements ActionInterface
                     WithDocumentNameProvider::DIMENSION_NAME,
                     $this->documentName
                 ),
+                WithNodePathsProvider::DIMENSION_NAME => $this->dimensionFactory->create(
+                    WithNodePathsProvider::DIMENSION_NAME,
+                    $item->getPaths()
+                )
             ];
 
             foreach ($item->getDimensions() as $name => $value) {
-                $dimensions[$name] = $this->dimensionFactory->create($name, (string)$value);
+                $dimensions[$name] = $this->dimensionFactory->create($name, $value);
             }
 
-            try {
-                $this->state->lock($this->documentName, (array)$item->getIds(), $item->getPaths());
-
-                $this->dimensionalIndexer->executeByDimensions(
-                    $dimensions,
-                    $item->getIds()
-                );
-            } finally {
-                $this->state->unlock();
-            }
+            $this->dimensionalIndexer->executeByDimensions(
+                $dimensions,
+                $item->getIds()
+            );
         }
     }
 }

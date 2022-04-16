@@ -4,16 +4,20 @@ namespace MateuszMesek\DocumentDataIndexMview\Plugin\InjectViews;
 
 use Magento\Framework\Mview\Config\Reader;
 use MateuszMesek\DocumentDataIndexMview\Config;
+use MateuszMesek\DocumentDataIndexMviewApi\ChangelogTableNameResolverInterface;
 
 class OnViewConfigReader
 {
     private Config $config;
+    private ChangelogTableNameResolverInterface $changelogTableNameResolver;
 
     public function __construct(
-        Config $config
+        Config $config,
+        ChangelogTableNameResolverInterface $changelogTableNameResolver
     )
     {
         $this->config = $config;
+        $this->changelogTableNameResolver = $changelogTableNameResolver;
     }
 
     public function afterRead(
@@ -25,16 +29,18 @@ class OnViewConfigReader
         $documentNames = $this->config->getDocumentNames();
 
         foreach ($documentNames as $documentName) {
+            $context = ['document_name' => $documentName];
+
             $viewId = "document_data_$documentName";
-            $subscriptionTable = "document_data_{$documentName}_mview";
+            $changelogTableName = $this->changelogTableNameResolver->resolve($context);
 
             $output[$viewId] = [
                 'view_id' => $viewId,
                 'action_class' => $this->config->getAction($documentName),
                 'group' => 'indexer',
                 'subscriptions' => [
-                    $subscriptionTable => [
-                        'name' => $subscriptionTable,
+                    $changelogTableName => [
+                        'name' => $changelogTableName,
                         'column' => 'id',
                         'subscription_model' => null
                     ]

@@ -7,6 +7,13 @@ class State
     private array $locks = [];
     private array $documents = [];
 
+    /**
+     * @param string $documentName
+     * @param array $documentIds
+     * @param array $nodePaths
+     * @return void
+     * @deprecared
+     */
     public function lock(string $documentName, array $documentIds, array $nodePaths): void
     {
         if (empty($nodePaths)) {

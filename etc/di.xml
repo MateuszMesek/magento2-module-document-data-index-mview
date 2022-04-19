@@ -68,12 +68,6 @@
         </arguments>
     </type>
 
-    <type name="MateuszMesek\DocumentDataApi\Command\GetDocumentDataInterface">
-        <plugin name="MateuszMesek_DocumentDataIndexMview" type="MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths\OnGetDocumentData"/>
-    </type>
-    <type name="MateuszMesek\DocumentDataApi\Command\GetDocumentNodesInterface">
-        <plugin name="MateuszMesek_DocumentDataIndexMview" type="MateuszMesek\DocumentDataIndexMview\Plugin\LimitNodePaths\GetDocumentNodes"/>
-    </type>
     <type name="MateuszMesek\DocumentDataIndexMview\Action">
         <arguments>
             <argument name="dimensionalIndexer" xsi:type="object">MateuszMesek\DocumentDataIndexIndexer\DimensionalIndexer</argument>

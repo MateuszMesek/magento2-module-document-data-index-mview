@@ -38,11 +38,13 @@ class OnViewConfigReader
                 'view_id' => $viewId,
                 'action_class' => $this->config->getAction($documentName),
                 'group' => 'indexer',
+                'walker' => 'Magento\Framework\Mview\View\ChangeLogBatchWalker',
                 'subscriptions' => [
                     $changelogTableName => [
                         'name' => $changelogTableName,
                         'column' => 'id',
-                        'subscription_model' => null
+                        'subscription_model' => null,
+                        'processor' => 'Magento\Framework\Mview\View\AdditionalColumnsProcessor\DefaultProcessor'
                     ]
                 ],
                 'document_name' => $documentName

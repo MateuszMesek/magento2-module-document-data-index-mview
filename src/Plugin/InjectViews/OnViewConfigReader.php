@@ -38,7 +38,7 @@ class OnViewConfigReader
                 'view_id' => $viewId,
                 'action_class' => $this->config->getAction($documentName),
                 'group' => 'indexer',
-                'walker' => 'Magento\Framework\Mview\View\ChangeLogBatchWalker',
+                'walker' => 'MateuszMesek\DocumentDataIndexMview\ChangeLogBatchWalker',
                 'subscriptions' => [
                     $changelogTableName => [
                         'name' => $changelogTableName,

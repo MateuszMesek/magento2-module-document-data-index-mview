@@ -5,7 +5,7 @@
             "document_id": true,
             "node_path": true,
             "dimensions": true,
-            "updated_at": true
+            "changed_at": true
         },
         "constraint": {
             "PRIMARY": true,

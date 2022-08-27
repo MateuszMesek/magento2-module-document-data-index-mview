@@ -77,9 +77,7 @@ class TriggerProvider implements TriggerProviderInterface
                             FROM (%5\$s) AS t
                             WHERE IFNULL(t.document_id, @documentId) IS NOT NULL
                             ON DUPLICATE KEY UPDATE
-                                `document_id` = VALUES(`document_id`),
-                                `node_path` = VALUES(`node_path`),
-                                `dimensions` = VALUES(`dimensions`);
+                                `changed_at` = NOW();
                         SQL,
                         $subscriptionItem->getDocumentId() ?? 'NULL',
                         $connection->quote($path),

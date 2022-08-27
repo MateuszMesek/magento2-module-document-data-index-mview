@@ -5,7 +5,7 @@
         <column xsi:type="varchar" name="document_id" length="150" nullable="false" comment="Document ID"/>
         <column xsi:type="varchar" name="node_path" length="150" nullable="false" comment="Node Path"/>
         <column xsi:type="varchar" name="dimensions" length="150" nullable="false" comment="Dimensions"/>
-        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated At"/>
+        <column xsi:type="timestamp" name="changed_at" nullable="false" default="CURRENT_TIMESTAMP" comment="Changed At"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>

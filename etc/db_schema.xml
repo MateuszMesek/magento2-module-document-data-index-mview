@@ -2,11 +2,17 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="document_data_mview_pattern" engine="innodb" comment="Document Data Mview Pattern">
         <column xsi:type="bigint" name="id" unsigned="true" nullable="false" identity="true" comment="ID"/>
-        <column xsi:type="varchar" name="document_id" length="255" nullable="false" comment="Document ID"/>
-        <column xsi:type="varchar" name="node_path" length="255"  nullable="true" comment="Node Path"/>
-        <column xsi:type="json" name="dimensions" nullable="true" comment="Dimensions"/>
+        <column xsi:type="varchar" name="document_id" length="150" nullable="false" comment="Document ID"/>
+        <column xsi:type="varchar" name="node_path" length="150" nullable="false" comment="Node Path"/>
+        <column xsi:type="varchar" name="dimensions" length="150" nullable="false" comment="Dimensions"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated At"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="UNIQUE">
+            <column name="document_id"/>
+            <column name="node_path"/>
+            <column name="dimensions"/>
         </constraint>
     </table>
 </schema>

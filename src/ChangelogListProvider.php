@@ -39,7 +39,11 @@ class ChangelogListProvider implements ChangelogListProviderInterface
 
         $connection = $this->resourceConnection->getConnection();
         $select = ($connection->select())
-            ->from($this->resourceConnection->getTableName($changelogTableName))
+            ->distinct(true)
+            ->from(
+                $this->resourceConnection->getTableName($changelogTableName),
+                ['document_id', 'node_path', 'dimensions']
+            )
             ->where('id IN (?)', $ids);
 
         $rows = $connection->fetchAll($select);
@@ -62,7 +66,7 @@ class ChangelogListProvider implements ChangelogListProviderInterface
 
         foreach ($groupByDimensions as $dimensions => $documentIds) {
             foreach ($documentIds as $documentId => $paths) {
-                if (isset($paths[null])) {
+                if (isset($paths['*'])) {
                     $paths = [];
                 }
 

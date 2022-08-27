@@ -4,10 +4,12 @@
             "id":  true,
             "document_id": true,
             "node_path": true,
-            "dimensions": true
+            "dimensions": true,
+            "updated_at": true
         },
         "constraint": {
-            "PRIMARY": true
+            "PRIMARY": true,
+            "UNIQUE": true
         }
     }
 }

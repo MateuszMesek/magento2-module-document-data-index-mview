@@ -30,7 +30,9 @@ class ChangeLogBatchWalker implements ChangeLogBatchWalkerInterface
             throw new ChangelogTableNotExistsException(new Phrase("Table %1 does not exist", [$changelogTableName]));
         }
 
-        $select = $connection->select()->distinct(true)
+        $select = $connection->select()
+            ->distinct(true)
+            ->from($changelogTableName, [$changelog->getColumnName()])
             ->where(
                 'version_id > ?',
                 $fromVersionId
@@ -42,7 +44,6 @@ class ChangeLogBatchWalker implements ChangeLogBatchWalkerInterface
             ->order('version_id ASC')
             ->limit($batchSize);
 
-        $select->from($changelogTableName, [$changelog->getColumnName()]);
         return $connection->fetchCol($select);
     }
 }

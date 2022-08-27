@@ -75,11 +75,15 @@ class TriggerProvider implements TriggerProviderInterface
                             INSERT INTO %4\$s (`document_id`, `node_path`, `dimensions`)
                             SELECT IFNULL(t.document_id, @documentId), IFNULL(t.node_path, @nodePath), CONVERT(IFNULL(t.dimensions, @dimensions) USING UTF8MB4)
                             FROM (%5\$s) AS t
-                            WHERE IFNULL(t.document_id, @documentId) IS NOT NULL;
+                            WHERE IFNULL(t.document_id, @documentId) IS NOT NULL
+                            ON DUPLICATE KEY UPDATE
+                                `document_id` = VALUES(`document_id`),
+                                `node_path` = VALUES(`node_path`),
+                                `dimensions` = VALUES(`dimensions`);
                         SQL,
                         $subscriptionItem->getDocumentId() ?? 'NULL',
-                        $path === '*' ? 'NULL' : $connection->quote($path),
-                        $subscriptionItem->getDimensions() ?? 'NULL',
+                        $connection->quote($path),
+                        $subscriptionItem->getDimensions() ?? $connection->quote('{}'),
                         $connection->quoteIdentifier($changelogTableName),
                         $subscriptionItem->getRows() ?? 'SELECT NULL AS `document_id`, NULL AS `node_path`, NULL AS `dimensions`'
                     );

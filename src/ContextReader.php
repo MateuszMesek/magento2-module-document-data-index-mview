@@ -30,6 +30,9 @@ class ContextReader
             throw new InvalidArgumentException('"changelog_ids" is not provided in context');
         }
 
-        return $context['changelog_ids'];
+        return array_map(
+            'intval',
+            $context['changelog_ids']
+        );
     }
 }

@@ -105,7 +105,7 @@ class TriggerProvider implements TriggerProviderInterface
                             }
 
                             $conditions[] = <<<SQL
-                                (NEW.$columnName != OLD.$columnName)
+                                NOT(NEW.$columnName <=> OLD.$columnName)
                             SQL;
                         }
 

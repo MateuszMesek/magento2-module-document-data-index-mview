@@ -3,8 +3,10 @@
 namespace MateuszMesek\DocumentDataIndexMview\Plugin\InjectViews;
 
 use Magento\Framework\Mview\Config\Reader;
+use Magento\Framework\Mview\View\ChangeLogBatchWalker;
 use MateuszMesek\DocumentDataIndexMview\Config;
 use MateuszMesek\DocumentDataIndexMviewApi\ChangelogTableNameResolverInterface;
+use Magento\Framework\Mview\View\AdditionalColumnsProcessor\DefaultProcessor;
 
 class OnViewConfigReader
 {
@@ -38,13 +40,13 @@ class OnViewConfigReader
                 'view_id' => $viewId,
                 'action_class' => $this->config->getAction($documentName),
                 'group' => 'indexer',
-                'walker' => 'MateuszMesek\DocumentDataIndexMview\ChangeLogBatchWalker',
+                'walker' => ChangeLogBatchWalker::class,
                 'subscriptions' => [
                     $changelogTableName => [
                         'name' => $changelogTableName,
                         'column' => 'id',
                         'subscription_model' => null,
-                        'processor' => 'Magento\Framework\Mview\View\AdditionalColumnsProcessor\DefaultProcessor'
+                        'processor' => DefaultProcessor::class
                     ]
                 ],
                 'document_name' => $documentName

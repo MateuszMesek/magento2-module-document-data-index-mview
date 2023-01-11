@@ -79,29 +79,7 @@ class TriggerProvider implements TriggerProviderInterface
                         SQL;
                     }
 
-                    if ($triggers[$triggerName]->getEvent() === Trigger::EVENT_UPDATE) {
-                        $columns = $connection->describeTable($triggers[$triggerName]->getTable());
-
-                        $conditions = [];
-
-                        foreach ($columns as $columnData) {
-                            ['COLUMN_NAME' => $columnName] = $columnData;
-
-                            if ($columnName === 'updated_at') {
-                                continue;
-                            }
-
-                            $conditions[] = <<<SQL
-                                NOT(NEW.$columnName <=> OLD.$columnName)
-                            SQL;
-                        }
-
-                        $condition = implode(' OR ', $conditions);
-
-                        $statement = <<<SQL
-                            IF $condition THEN $statement END IF;
-                        SQL;
-                    }
+                    $statement = $this->addUpdateCondition($triggers[$triggerName], $statement);
 
                     $triggers[$triggerName]->addStatement($statement);
                 }
@@ -109,5 +87,54 @@ class TriggerProvider implements TriggerProviderInterface
         }
 
         yield from $triggers;
+    }
+
+    private function addUpdateCondition(Trigger $trigger, string $statement): string
+    {
+        if ($trigger->getEvent() !== Trigger::EVENT_UPDATE) {
+            return $statement;
+        }
+
+        $columns = $this->getTableColumns($trigger->getTable());
+
+        if (empty($columns)) {
+            return $statement;
+        }
+
+        $conditions = [];
+
+        foreach ($columns as $column) {
+            if ($column === 'updated_at') {
+                continue;
+            }
+
+            $conditions[] = <<<SQL
+                                NOT(NEW.$column <=> OLD.$column)
+                            SQL;
+        }
+
+        $condition = implode(' OR ', $conditions);
+
+        return <<<SQL
+            IF $condition THEN $statement END IF;
+        SQL;
+    }
+
+    private function getTableColumns(string $tableName): array
+    {
+        $connection = $this->resourceConnection->getConnection();
+
+        if (!$connection->isTableExists($tableName)) {
+            return [];
+        }
+
+        return array_map(
+            static function ($columnData) {
+                return $columnData['COLUMN_NAME'];
+            },
+            array_values(
+                $connection->describeTable($tableName)
+            )
+        );
     }
 }

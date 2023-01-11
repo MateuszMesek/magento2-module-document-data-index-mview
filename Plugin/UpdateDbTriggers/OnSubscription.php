@@ -59,6 +59,11 @@ class OnSubscription
 
         foreach ($triggers as $trigger) {
             $connection->dropTrigger($trigger->getName());
+
+            if (!$connection->isTableExists($trigger->getTable())) {
+                continue;
+            }
+
             $connection->createTrigger($trigger);
         }
     }

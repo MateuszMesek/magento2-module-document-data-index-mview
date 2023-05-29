@@ -80,6 +80,15 @@
         </arguments>
     </type>
     <!-- mview subscription -->
+    <type name="Magento\Framework\Mview\TriggerCleaner">
+        <plugin name="MateuszMesek_DocumentDataIndexMview" type="MateuszMesek\DocumentDataIndexMview\Plugin\UpdateDbTriggers\OnTriggerCleaner"/>
+    </type>
+    <type name="MateuszMesek\DocumentDataIndexMview\Plugin\UpdateDbTriggers\OnTriggerCleaner">
+        <arguments>
+            <argument name="documentNameResolver" xsi:type="object">MateuszMesek\DocumentDataIndexMview\Model\DocumentNameResolver</argument>
+            <argument name="triggerProvider" xsi:type="object">MateuszMesek\DocumentDataIndexMview\Model\TriggerProvider</argument>
+        </arguments>
+    </type>
     <type name="Magento\Framework\Mview\View\SubscriptionInterface">
         <plugin name="MateuszMesek_DocumentDataIndexMview" type="MateuszMesek\DocumentDataIndexMview\Plugin\UpdateDbTriggers\OnSubscription"/>
     </type>

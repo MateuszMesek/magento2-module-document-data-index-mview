@@ -32,7 +32,8 @@ class TriggerProvider implements TriggerProviderInterface
 
         $connection = $this->resourceConnection->getConnection();
 
-        $triggers = [];
+        $triggersByName = [];
+        $statementsByTriggerName = [];
 
         foreach ($subscriptionsByPath as $path => $subscriptions) {
             foreach ($subscriptions as $subscription) {
@@ -46,25 +47,39 @@ class TriggerProvider implements TriggerProviderInterface
                 foreach ($subscriptionItems as $subscriptionItem) {
                     $triggerName = $this->triggerNameResolver->resolver($context, $subscriptionItem);
 
-                    if (!isset($triggers[$triggerName])) {
-                        $triggers[$triggerName] = ($this->triggerFactory->create())
+                    if (!isset($triggersByName[$triggerName])) {
+                        $triggersByName[$triggerName] = ($this->triggerFactory->create())
                             ->setName($triggerName)
                             ->setTable($this->resourceConnection->getTableName($subscriptionItem->getTableName()))
                             ->setTime($subscriptionItem->getTriggerTime())
                             ->setEvent($subscriptionItem->getTriggerEvent());
                     }
 
+                    if (!isset($statementsByTriggerName[$triggerName])) {
+                        $statementsByTriggerName[$triggerName] = [];
+                    }
+
+                    $condition = (string)$subscriptionItem->getCondition();
+
+                    if (!isset($statementsByTriggerName[$triggerName][$condition])) {
+                        $statementsByTriggerName[$triggerName][$condition] = [];
+                    }
+
                     $statement = sprintf(
                         <<<SQL
-                            SET @documentId = %1\$s;
-                            SET @nodePath = %2\$s;
-                            SET @dimensions = %3\$s;
-                            INSERT INTO %4\$s (`document_id`, `node_path`, `dimensions`)
-                            SELECT IFNULL(t.document_id, @documentId), IFNULL(t.node_path, @nodePath), CONVERT(IFNULL(t.dimensions, @dimensions) USING UTF8MB4)
-                            FROM (%5\$s) AS t
-                            WHERE IFNULL(t.document_id, @documentId) IS NOT NULL
-                            ON DUPLICATE KEY UPDATE
-                                `changed_at` = NOW();
+                        SET @documentId = %1\$s;
+                        SET @nodePath = %2\$s;
+                        SET @dimensions = %3\$s;
+                        INSERT INTO %4\$s (`document_id`, `node_path`, `dimensions`)
+                        SELECT IFNULL(t.document_id, @documentId),
+                               IFNULL(t.node_path, @nodePath),
+                               CONVERT(IFNULL(t.dimensions, @dimensions) USING UTF8MB4)
+                        FROM (
+                        %5\$s
+                        ) AS t
+                        WHERE IFNULL(t.document_id, @documentId) IS NOT NULL
+                        ON DUPLICATE KEY UPDATE
+                            `changed_at` = NOW();
                         SQL,
                         $subscriptionItem->getDocumentId() ?? 'NULL',
                         $connection->quote($path),
@@ -73,20 +88,38 @@ class TriggerProvider implements TriggerProviderInterface
                         $subscriptionItem->getRows() ?? 'SELECT NULL AS `document_id`, NULL AS `node_path`, NULL AS `dimensions`'
                     );
 
-                    if ($condition = $subscriptionItem->getCondition()) {
-                        $statement = <<<SQL
-                            IF $condition THEN $statement END IF;
-                        SQL;
-                    }
-
-                    $statement = $this->addUpdateCondition($triggers[$triggerName], $statement);
-
-                    $triggers[$triggerName]->addStatement($statement);
+                    $statementsByTriggerName[$triggerName][$condition][] = $statement;
                 }
             }
         }
 
-        yield from $triggers;
+        foreach ($triggersByName as $triggerName => $trigger) {
+            $statements = [];
+
+            foreach ($statementsByTriggerName[$triggerName] as $condition => $conditionStatements) {
+                $conditionStatement = implode("\n\n", $conditionStatements);
+
+                if ($condition !== '') {
+                    $conditionStatement = <<<SQL
+                    IF $condition THEN
+                    $conditionStatement
+                    END IF;
+                    SQL;
+                }
+
+                $statements[] = $conditionStatement;
+            }
+
+            $statement = implode("\n", $statements);
+
+            $statement = $this->addUpdateCondition($trigger, $statement);
+
+            $trigger->addStatement($statement);
+        }
+
+        yield from array_values(
+            $triggersByName
+        );
     }
 
     private function addUpdateCondition(Trigger $trigger, string $statement): string
@@ -109,14 +142,16 @@ class TriggerProvider implements TriggerProviderInterface
             }
 
             $conditions[] = <<<SQL
-                                NOT(NEW.$column <=> OLD.$column)
-                            SQL;
+            NOT(NEW.$column <=> OLD.$column)
+            SQL;
         }
 
         $condition = implode(' OR ', $conditions);
 
         return <<<SQL
-            IF $condition THEN $statement END IF;
+        IF $condition THEN
+        $statement
+        END IF;
         SQL;
     }
 

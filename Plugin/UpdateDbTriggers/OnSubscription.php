@@ -99,11 +99,5 @@ class OnSubscription
         foreach ($triggers as $trigger) {
             $connection->dropTrigger($trigger->getName());
         }
-
-        $changelogTableName = $this->changelogTableNameResolver->resolve($context);
-
-        $connection->dropTable(
-            $this->resource->getTableName($changelogTableName)
-        );
     }
 }

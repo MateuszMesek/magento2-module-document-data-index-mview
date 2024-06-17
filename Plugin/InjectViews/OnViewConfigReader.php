@@ -3,10 +3,10 @@
 namespace MateuszMesek\DocumentDataIndexMview\Plugin\InjectViews;
 
 use Magento\Framework\Mview\Config\Reader;
+use Magento\Framework\Mview\View\AdditionalColumnsProcessor\DefaultProcessor;
 use Magento\Framework\Mview\View\ChangeLogBatchWalker;
 use MateuszMesek\DocumentDataIndexMview\Model\Config;
 use MateuszMesek\DocumentDataIndexMviewApi\Model\ChangelogTableNameResolverInterface;
-use Magento\Framework\Mview\View\AdditionalColumnsProcessor\DefaultProcessor;
 
 class OnViewConfigReader
 {
